@@ -20,24 +20,37 @@ const player = {
     y: 0,
     width: 25,
     height: 45,
-    speed: 4,
+    speed: 3,
     sprintSpeed: 7,
-    jumpForce: 12,
+    jumpForce: 8,
     velX: 0,
     velY: 0,
     direction: 'right',
     onGround: false,
     currentAction: 'idle',
     isCrouching: false,
-    isAttacking: false
+    isAttacking: false,
+    hitboxPadX: 0, // Horizontal hitbox padding (can be negative or positive)
+    hitboxPadY: 0, // Vertical hitbox padding (can be negative or positive)
+    hitboxPadW: 0, // Width adjustment (can be negative or positive)
+    hitboxPadH: -6  // Height adjustment (can be negative or positive)
 };
 
 const GRAVITY = 0.5;
-const DRAW_SCALE = 0.2;
+const DRAW_SCALE = 0.18;
 
 const rawFrames = {
-    idle: [{ x: 803, y: 532, w: 77, h: 100 }, { x: 803, y: 532, w: 77, h: 100 }],
-    walk: [{ x: 32, y: 19, w: 77, h: 106 }, { x: 164, y: 19, w: 77, h: 106 }, { x: 290, y: 19, w: 77, h: 106 }, { x: 419, y: 19, w: 77, h: 106 }, { x: 545, y: 19, w: 77, h: 106 }, { x: 670, y: 19, w: 77, h: 106 }, { x: 803, y: 19, w: 77, h: 106 }, { x: 928, y: 19, w: 77, h: 106 }, { x: 1056, y: 19, w: 77, h: 106 }],
+    idle: [{ x: 32, y: 19, w: 77, h: 106 }],
+    walk: [
+        { x: 32, y: 19, w: 77, h: 106 },
+        { x: 164, y: 19, w: 77, h: 106 },
+        { x: 290, y: 19, w: 77, h: 106 },
+        { x: 419, y: 19, w: 77, h: 106 },
+        { x: 545, y: 19, w: 77, h: 106 },
+        { x: 670, y: 19, w: 77, h: 106 },
+        { x: 803, y: 19, w: 77, h: 106 },
+        { x: 928, y: 19, w: 77, h: 106 },
+        { x: 1056, y: 19, w: 77, h: 106 }],
     jump: [{ x: 25, y: 1166, w: 94, h: 104 }, { x: 153, y: 1166, w: 94, h: 104 }, { x: 282, y: 1166, w: 94, h: 104 }, { x: 415, y: 1166, w: 94, h: 104 }]
 };
 const frames = rawFrames;
@@ -348,26 +361,78 @@ function updatePlayer(input) {
     if (player.isAttacking && !input.attack) player.isAttacking = false;
     player.velY += GRAVITY;
     if (!player.onGround) action = 'jump';
+
+    // Dynamically update hitbox size to match current animation frame, with adjustable padding
+    const frame = frames[action]?.[animation.frameIndex];
+    const baseWidth = frame ? frame.w * DRAW_SCALE : player.width;
+    const baseHeight = frame ? frame.h * DRAW_SCALE : player.height;
+    const paddedWidth = baseWidth + player.hitboxPadW;
+    const paddedHeight = baseHeight + player.hitboxPadH;
+    if (player.width !== paddedWidth || player.height !== paddedHeight) {
+        player.width = paddedWidth;
+        player.height = paddedHeight;
+    }
+
+    // --- Improved collision resolution with hitbox padding ---
+    // X axis
     const newX = player.x + player.velX;
-    let nextRectX = { x: newX, y: player.y, w: player.width, h: player.height };
-    if (!hitsAnyTile(nextRectX, collisionTiles)) {
+    let nextRectX = {
+        x: newX + player.hitboxPadX,
+        y: player.y + player.hitboxPadY,
+        w: player.width,
+        h: player.height
+    };
+    const hitTileX = hitsAnyTile(nextRectX, collisionTiles);
+    if (!hitTileX) {
         player.x = newX;
+    } else {
+        // Moving right
+        if (player.velX > 0) {
+            player.x = hitTileX.x - player.width - player.hitboxPadX;
+        }
+        // Moving left
+        else if (player.velX < 0) {
+            player.x = hitTileX.x + hitTileX.w - player.hitboxPadX;
+        }
+        player.velX = 0;
     }
     if (checkTrapCollision(nextRectX)) {
         handleTrapCollision();
     }
+    // Y axis
     const newY = player.y + player.velY;
-    let nextRectY = { x: player.x, y: newY, w: player.width, h: player.height };
-    const hitTile = hitsAnyTile(nextRectY, collisionTiles);
-    if (!hitTile) {
+    let nextRectY = {
+        x: player.x + player.hitboxPadX,
+        y: newY + player.hitboxPadY,
+        w: player.width,
+        h: player.height
+    };
+    const hitTileY = hitsAnyTile(nextRectY, collisionTiles);
+    if (!hitTileY) {
         player.y = newY;
         player.onGround = false;
     } else {
-        if (player.velY > 0) {
-            player.y = hitTile.y - player.height;
+        // Always push player up and out of the block if falling or stuck
+        if (player.velY > 0 || player.velY === 0) {
+            player.y = hitTileY.y - player.height - player.hitboxPadY;
             player.onGround = true;
+        } else if (player.velY < 0) {
+            player.y = hitTileY.y + hitTileY.h - player.hitboxPadY;
         }
         player.velY = 0;
+        // Failsafe: if still inside a block, nudge up until clear
+        let safety = 0;
+        let testRect = {
+            x: player.x + player.hitboxPadX,
+            y: player.y + player.hitboxPadY,
+            w: player.width,
+            h: player.height
+        };
+        while (hitsAnyTile(testRect, collisionTiles) && safety < 10) {
+            player.y -= 1;
+            testRect.y = player.y + player.hitboxPadY;
+            safety++;
+        }
     }
     if (checkTrapCollision(nextRectY)) {
         handleTrapCollision();
@@ -388,7 +453,7 @@ function updateCamera() {
     camera.y = Math.max(0, Math.min(mapHeight * tileSize - canvas.height, camera.y));
 }
 
-let SHOW_HITBOX = true;
+let SHOW_HITBOX = false;
 function setShowHitbox(val) { SHOW_HITBOX = !!val; }
 
 function drawMap() {
@@ -432,10 +497,10 @@ function drawPlayer() {
     }
     const drawW = frame.w * DRAW_SCALE;
     const drawH = frame.h * DRAW_SCALE;
-    const drawX = player.x + (player.width - drawW) / 2;
-    const drawY = player.y + player.height - drawH;
-    const screenX = drawX - camera.x;
-    const screenY = drawY - camera.y;
+    const drawX = Math.round(player.x + (player.width - drawW) / 2);
+    const drawY = Math.round(player.y + player.height - drawH);
+    const screenX = drawX - Math.round(camera.x);
+    const screenY = drawY - Math.round(camera.y);
     ctx.save();
     if (player.direction === 'left') {
         ctx.scale(-1, 1);
