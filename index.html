@@ -1,153 +1,48 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gaming Lounge</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- SEO Tags -->
-    <meta name="description" content="A community-driven platform for gamers to connect and collaborate.">
-    <meta name="keywords" content="gaming, community, gamers, collaboration, esports">
-    <meta name="author" content="Kevin Donohue">
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="Gaming Lounge">
-    <meta property="og:description" content="A community-driven platform for gamers to connect and collaborate.">
-    <meta property="og:image" content="https://dmhswebdev.github.io/gaming/images/og_image.jpg">
-    <meta property="og:url" content="https://dmhswebdev.hithub.io">
-    <meta property="og:type" content="website">
-
-    <!--Twitter Card-->
-    <meta name="twitter:card" content="Gaming Lounge">
-    <meta name="twitter:title" content="Gaming Lounge">
-    <meta name="twitter:description" content="A community-driven platform for gamers to connect and collaborate.">
-    <meta name="twitter:image" content="https://dmhswebdev.github.io/gaming/images/twitter_image.jpg">
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="64x64" href="https://dmhswebdev.github.io/gaming/favicon-64x64.png">
-
-
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Arrow Key Game</title>
+    <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
-    <header class="main-header">
-        <div class="logo">Gaming Lounge</div>
-        <nav class="top-nav">
-            <a href="#" class="log-in">LOG IN</a>
-        </nav>
-    </header>
-
-    <main>
-        <section class="hero-section">
-            <div class="hero-image">
-                <img src="./1000_F_413990886_hChS8igRgaOC4IlkIFIxiQ2EeW5U8LKf.jpg" alt="Gaming Lounge Hero Image">
-            </div>
-        </section>
-        <!-- 
-        <section class="video-section">
-            <div class="video-player">
-                <video controls autoplay muted loop>
-                    <source src="your-gaming-video.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-        </section> -->
-
-        <section class="benefits-section">
-            <div class="benefits-container">
-                <div class="benefits-track">
-                    <div class="benefit-card">
-                        <h3>BENEFIT #1</h3>
-                        <p>Short description of benefit 1.</p>
-                    </div>
-                    <div class="benefit-card">
-                        <h3>BENEFIT #2</h3>
-                        <p>Short description of benefit 2.</p>
-                    </div>
-                    <div class="benefit-card">
-                        <h3>BENEFIT #3</h3>
-                        <p>Short description of benefit 3.</p>
-                    </div>
-                </div>
-                <div class="benefits-indicators">
-                    <span class="benefits-indicator active" data-slide="0"></span>
-                    <span class="benefits-indicator" data-slide="1"></span>
-                    <span class="benefits-indicator" data-slide="2"></span>
-                </div>
-            </div>
-        </section>
-
-        <section class="testimonials-section">
-            <h2>TESTIMONIALS</h2>
-            <div class="testimonial-slider">
-                <button class="slider-btn prev-btn">&larr;</button>
-                <div class="testimonial-track">
-                    <div class="testimonial-item active">
-                        <div class="avatar"></div>
-                        <p>"This place is awesome! Best gaming experience."</p>
-                        <span>- Gamer A</span>
-                    </div>
-                    <div class="testimonial-item">
-                        <div class="avatar"></div>
-                        <p>"Friendly staff and great setup. Highly recommend!"</p>
-                        <span>- Gamer B</span>
-                    </div>
-                    <div class="testimonial-item">
-                        <div class="avatar"></div>
-                        <p>"My go-to spot for competitive play."</p>
-                        <span>- Gamer C</span>
-                    </div>
-                </div>
-                <button class="slider-btn next-btn">&rarr;</button>
-                <div class="slider-indicators">
-                    <span class="indicator active" data-slide="0"></span>
-                    <span class="indicator" data-slide="1"></span>
-                    <span class="indicator" data-slide="2"></span>
-                </div>
-            </div>
-        </section>
-
-        <section class="features-section">
-            <div class="feature-card">
-                <h3>FEATURE #1</h3>
-                <p>Detail about feature 1.</p>
-            </div>
-            <div class="feature-card">
-                <h3>FEATURE #2</h3>
-                <p>Detail about feature 2.</p>
-            </div>
-            <div class="feature-card">
-                <h3>FEATURE #3</h3>
-                <p>Detail about feature 3.</p>
-            </div>
-        </section>
-
-        <section class="signup-section">
-            <h2>SIGN UP / GET STARTED</h2>
-            <form class="signup-form">
-                <input type="email" placeholder="EMAIL...">
-                <button type="submit">SUBMIT</button>
-            </form>
-        </section>
-    </main>
-
-    <footer class="main-footer">
-        <nav class="footer-nav">
-            <a href="#">About Us</a>
-            <a href="#">Games</a>
-            <a href="#">Events</a>
-            <a href="#">Contact</a>
-        </nav>
-        <div class="social-media">
-            <a href="#"><img src="https://via.placeholder.com/30?text=FB" alt="Facebook"></a>
-            <a href="#"><img src="https://via.placeholder.com/30?text=TW" alt="Twitter"></a>
-            <a href="#"><img src="https://via.placeholder.com/30?text=IG" alt="Instagram"></a>
-            <a href="#"><img src="https://via.placeholder.com/30?text=YT" alt="YouTube"></a>
+    <div class="container">
+        <h1>Move the square with Arrow Keys or WASD</h1>
+        <div id="start-overlay" style="position:fixed;z-index:10;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;flex-direction:column;">
+            <h1 style="color:#fff;font-size:2rem;margin-bottom:1rem;">Click to Start</h1>
+            <button id="start-btn" style="font-size:1.2rem;padding:0.7em 2em;border-radius:8px;border:none;background:#3498db;color:#fff;cursor:pointer;">Start Game</button>
         </div>
-    </footer>
+        <canvas id="game" tabindex="0"></canvas>
 
-    <script src="script.js"></script>
+        <div class="mobile-controls">
+            <div class="mobile-left">
+                <button id="btn-left" aria-label="Left" class="circle-btn">&#8592;</button>
+                <button id="btn-right" aria-label="Right" class="circle-btn">&#8594;</button>
+            </div>
+            <div class="mobile-right">
+                <button id="btn-jump" aria-label="Jump" class="circle-btn">&#8593;</button>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        import SoundManager from './sound_manager.js';
+        import './game_engine_3.js';
+        // Wait for user interaction before starting game
+        const overlay = document.getElementById('start-overlay');
+        const startBtn = document.getElementById('start-btn');
+        function startGameWithSound() {
+            overlay.style.display = 'none';
+            window.dispatchEvent(new Event('game-start'));
+        }
+        startBtn.addEventListener('click', startGameWithSound);
+        // Also allow tap/click anywhere on overlay
+        overlay.addEventListener('click', e => {
+            if (e.target === overlay) startGameWithSound();
+        });
+    </script>
 </body>
 
 </html>
